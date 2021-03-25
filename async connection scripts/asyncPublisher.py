@@ -7,42 +7,42 @@ logger = logging.getLogger(__name__)
 
 class publish_engine:
     def __init__(self):
-        self._number_of_messages = 20
+        self._number_of_messages = 1000
         self._channel = None
         self._connection = None
-        self._url =""
+        self._url ="saitest"
         self._port = 5672
         self._queue = "async_q"
-        self._routing_key = "async_q.route"
+        self._routing_key = "async_q"
         self._exchange=""
 
     def on_open(self, connection):
         # Invoked when the connection is open
-        print("Connection open\n")
+        print("--- CONNECTION OPENED ---")
         self._channel = self._connection.channel(on_open_callback=self.on_channel_open)
 
     def on_declare(self, channel):
-        print("Received queue declared from RabbitMQ")
+        print("--- QUEUE DECLARED ---")
         while self._number_of_messages > 0:
             print(self._number_of_messages)
 
             self._channel.basic_publish(exchange=self._exchange,
                                         routing_key=self._routing_key,
-                                        body="H" + str(self._number_of_messages),
+                                        body="MESSAGE PUBLISHED #" + str(self._number_of_messages),
                                         properties=pika.BasicProperties(content_type='text/plain',
                                                                         delivery_mode=2))
             self._number_of_messages -= 1
         self._connection.close()
 
     def on_channel_open(self, channel):
-        print("Receive 'Channel Created' from RabbitMQ")
+        print("--- CHANNEL OPENED ---")
         argument_list = {"x-queue-master-locator": "random"}
         self._channel.queue_declare(queue=self._queue, callback=self.on_declare, durable=True, arguments=argument_list)
 
     def on_close(self, connection, reply_code, ):
         print(reply_code)
         # print(reply_message)
-        print("CONNECTION CLOSED\n")
+        print("--- CONNECTION CLOSED ---\n")
 
     def run(self):
         logging.basicConfig(level=logging.ERROR, format=log_format)
