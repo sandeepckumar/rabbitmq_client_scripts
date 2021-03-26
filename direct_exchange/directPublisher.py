@@ -1,5 +1,7 @@
-import pika, time
 from random import randint
+
+import pika
+import time
 
 
 class PublishEngine:

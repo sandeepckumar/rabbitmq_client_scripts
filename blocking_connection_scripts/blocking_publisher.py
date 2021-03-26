@@ -4,8 +4,8 @@ import time
 
 class PublishEngine:
     def __init__(self):
-        self._messages = 100
-        self._message_interval = 1
+        self._messages = 1000
+        self._message_interval = 0
         self._queue_name = "blocking_con_queue"
         self._connection = None
         self._channel = None
